@@ -1,3 +1,6 @@
-import express from 'express'
+import express from "express"
+import { card } from "../controllers/cardController.js"
 
-const router = new express.Router()
+export const router = new express.Router()
+
+router.get("/data", card)
