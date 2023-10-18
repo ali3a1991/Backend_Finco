@@ -10,6 +10,8 @@ export const addTransaction = async (req, res) => {
   if (!card) {
     res.status(403).end()
   } else {
+    req.body.date = new Date(req.body.date)
+    req.body.value = Number(req.body.value)
     req.body.card_id = new ObjectId(req.body.card_id)
     await db.collection("transactions").insertOne(req.body)
     res.end()
