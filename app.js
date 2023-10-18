@@ -15,7 +15,9 @@ app.use(cors())
 app.use(express.json())
 
 app.use("/api/auth", upload.single("img"), authRouter)
+
 app.use("/api/cards",cardRouter)
 app.use("/api/transactions", upload.none(),transactionRouter)
+
 
 app.listen(port, () => console.log("port: ", port))

@@ -3,7 +3,9 @@ import { getDb } from "../utils/db.js"
 
 export const addCard = async (req, res) => {
   const db = await getDb()
-  const user = await db.collection("users").findOne({_id: new ObjectId(req.body.owner)})
+  const user = await db
+    .collection("users")
+    .findOne({ _id: new ObjectId(req.body.owner) })
 
   if (!user) {
     res.status(403).end()
@@ -16,12 +18,17 @@ export const addCard = async (req, res) => {
 
 export const card = async (req, res) => {
   const db = await getDb()
-  const user = await db.collection("users").findOne({_id: new ObjectId(req.body.owner)})
+  const user = await db
+    .collection("users")
+    .findOne({ _id: new ObjectId(req.body.owner) })
 
   if (!user) {
     res.status(403).end()
   } else {
-    const cards = await db.collection("cards").find({ owner: user._id }).toArray()
+    const cards = await db
+      .collection("cards")
+      .find({ owner: user._id })
+      .toArray()
     res.json(cards)
   }
 }
