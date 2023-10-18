@@ -11,9 +11,11 @@ export const register = async (req, res) => {
   try {
     const db = await getDb()
 
-    const userExisting = await db.collection("users").findOne({$or: [{username: req.body.username}, {email: req.body.email}]})
+    const userExisting = await db.collection("users").findOne({
+      $or: [{ username: req.body.username }, { email: req.body.email }],
+    })
     if (userExisting) {
-      res.status(405).json({ "error": "username or email already used" })
+      res.status(405).json({ error: "username or email already used" })
     } else {
       const responseUsers = await db.collection("users").insertOne({
         username: req.body.username,
@@ -23,32 +25,38 @@ export const register = async (req, res) => {
         profile_image_url: "",
       })
       const user_id = responseUsers.insertedId
-  
+
       const responseCards = await db.collection("cards").insertOne({
         owner: new ObjectId(user_id),
         expiration_date: "",
         card_number: "",
       })
-  
+
       if (responseUsers && responseCards) {
         const token = createToken({ user: user_id })
-  
-        res.cookie("finco-token", token, {
+
+        res.cookie("finco_token", token, {
           httpOnly: true,
           sameSite: "none",
           secure: true,
           path: "/",
         })
-  
-        res.json({ _id: user_id })
+
+        res.json({
+          _id: user_id,
+          username: responseUsers.username,
+          profile_image_url: responseUsers.profile_image_url,
+          expiration_date: responseCards.expiration_date,
+          card_number: responseCards.card_number,
+        })
       } else {
         console.error("Register in DB failed")
-        res.status(500).end()
+        res.status(500).end(error.message)
       }
     }
   } catch (error) {
     console.error(error.message)
-    res.status(500).end()
+    res.status(500).end(error.message)
   }
 }
 
@@ -88,21 +96,53 @@ export const updateProfile = async (req, res) => {
         if (!response) res.status(500).end()
       }
 
-      res.status(205).end()
+      res.json({
+        _id: response._id,
+        username: response.username,
+        profile_image_url: response.profile_image_url,
+      })
     } else {
       console.log("User not found")
       res.status(404).end()
     }
   } catch (error) {
     console.error(error.message)
-    res.status(500).end()
+    res.status(500).end(error.message)
   }
 }
 
-// TESTING
-export const getUsers = async (req, res) => {
-  const db = await getDb()
-  const response = await db.collection("users").find().toArray()
-  console.log(response)
-  res.status(205).end()
+export const login = async (req, res) => {
+  console.log(req.body)
+
+  try {
+    const db = await getDb()
+    const responseUsers = await db.collection("users").findOne({
+      email: req.body.email,
+      password: req.body.password,
+    })
+    if (responseUsers) {
+      console.log(responseUsers)
+      const user_id = responseUsers._id
+
+      const responseCards = await db.collection("cards").findOne({
+        owner: new ObjectId(user_id),
+      })
+
+      if (responseUsers && responseCards) {
+        res.json({
+          _id: user_id,
+          username: responseUsers.username,
+          profile_image_url: responseUsers.profile_image_url,
+          expiration_date: responseCards.expiration_date,
+          card_number: responseCards.card_number,
+        })
+      }
+    } else {
+      console.log("user not found")
+      res.status(403).end()
+    }
+  } catch (error) {
+    console.error(error.message)
+    res.status(500).end(error.message)
+  }
 }
