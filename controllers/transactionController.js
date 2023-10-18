@@ -22,6 +22,7 @@ export const transaction = async (req, res) => {
     res.status(403).end()
   } else {
     const transactions = await db.collection("transactions").find({ card_id: card._id}).toArray()
-    res.json(transactions)
+    const sortTransactions = transactions.sort((a,b) => b.date - a.date)
+    res.json(sortTransactions)
   }
 }
