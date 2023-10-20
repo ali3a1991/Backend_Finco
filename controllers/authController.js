@@ -89,6 +89,11 @@ export const login = async (req, res) => {
           path: "/",
         })
 
+        const userAllCards = await db
+        .collection("cards")
+        .find({ owner: user_id })
+        .toArray()
+
         res.json({
           _id: user_id,
           username: responseUsers.username,
@@ -96,6 +101,7 @@ export const login = async (req, res) => {
           spending_limit: responseUsers.spending_limit,
           expiration_date: responseCards.expiration_date,
           card_number: responseCards.card_number,
+          userAllCards: userAllCards
         })
       }
     } else {
@@ -157,6 +163,11 @@ export const updateProfile = async (req, res) => {
         _id: new ObjectId(req.body._id)
       })
 
+      const userAllCards = await db
+      .collection("cards")
+      .find({ owner: req.body._id })
+      .toArray()
+
       res.json({
         _id: updatedSelectedUser._id,
         username: updatedSelectedUser.username,
@@ -164,6 +175,7 @@ export const updateProfile = async (req, res) => {
         spending_limit: updatedSelectedUser.spending_limit,
         expiration_date: updatedSelectedUser.expiration_date,
         card_number: updatedSelectedUser.card_number,
+        userAllCards: userAllCards
       })
     } else {
       console.log("User not found")
