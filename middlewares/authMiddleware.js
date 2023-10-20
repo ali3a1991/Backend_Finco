@@ -11,8 +11,6 @@ export const auth = async (req, res, next) => {
     req.payload = payload
     next()
 
-    // if (token === 'null') return res.status(403).end()
-
     // if(payload) {
     //   next()
     // } else {
