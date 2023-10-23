@@ -6,7 +6,6 @@ export const auth = async (req, res, next) => {
   const token = req.cookies.finco_token
 
   try {
-    console.log(verifyToken(token))
     const payload = verifyToken(token)
     req.payload = payload
     next()
