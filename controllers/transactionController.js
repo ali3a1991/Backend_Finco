@@ -14,7 +14,12 @@ export const addTransaction = async (req, res) => {
     req.body.value = Number(req.body.value)
     req.body.card_id = new ObjectId(req.body.card_id)
     await db.collection("transactions").insertOne(req.body)
-    res.end()
+    const transactions = await db
+      .collection("transactions")
+      .find({ card_id: card._id })
+      .toArray()
+    const sortTransactions = transactions.sort((a, b) => b.date - a.date)
+    res.json(sortTransactions)
   }
 }
 
