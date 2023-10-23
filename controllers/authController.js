@@ -24,6 +24,7 @@ export const register = async (req, res) => {
         cloudinary_image_id: "",
         profile_image_url: "",
         spending_limit: 3000,
+        default_card_number: "",
       })
       const user_id = responseUsers.insertedId
 
@@ -48,6 +49,7 @@ export const register = async (req, res) => {
           username: responseUsers.username,
           profile_image_url: responseUsers.profile_image_url,
           spending_limit: responseUsers.spending_limit,
+          default_card_number: responseUsers.default_card_number,
           expiration_date: responseCards.expiration_date,
           card_number: responseCards.card_number,
         })
@@ -99,6 +101,7 @@ export const login = async (req, res) => {
           username: responseUsers.username,
           profile_image_url: responseUsers.profile_image_url,
           spending_limit: responseUsers.spending_limit,
+          default_card_number: responseUsers.default_card_number,
           expiration_date: responseCards.expiration_date,
           card_number: responseCards.card_number,
           userAllCards: userAllCards
@@ -137,6 +140,7 @@ export const updateProfile = async (req, res) => {
             $set: {
               profile_image_url: secure_url,
               cloudinary_image_id: public_id,
+              default_card_number: req.body.card_number,
             },
           }
         )
@@ -173,6 +177,7 @@ export const updateProfile = async (req, res) => {
         username: updatedSelectedUser.username,
         profile_image_url: updatedSelectedUser.profile_image_url,
         spending_limit: updatedSelectedUser.spending_limit,
+        default_card_number: updatedSelectedUser.default_card_number,
         expiration_date: updatedSelectedUser.expiration_date,
         card_number: updatedSelectedUser.card_number,
         userAllCards: userAllCards
@@ -185,4 +190,12 @@ export const updateProfile = async (req, res) => {
     console.error(error.message)
     res.status(500).end(error.message)
   }
+}
+
+
+export const logout = async (_, res) => {
+  res.clearCookie("finco_token")
+  // res.cookie("finco_token", "", {expires: new Date(0)})
+  // res.send({ message : "Logout successful" })
+  res.status(200).end()
 }
