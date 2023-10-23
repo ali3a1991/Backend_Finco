@@ -6,7 +6,7 @@ import { createToken } from "../utils/jwtoken.js"
 import { uploadImage } from "../utils/imageService.js"
 
 export const register = async (req, res) => {
-  console.log(req.body)
+  // console.log(req.body)
 
   try {
     const db = await getDb()
@@ -64,9 +64,8 @@ export const register = async (req, res) => {
   }
 }
 
-
 export const login = async (req, res) => {
-  console.log(req.body)
+  // console.log(req.body)
 
   try {
     const db = await getDb()
@@ -92,9 +91,9 @@ export const login = async (req, res) => {
         })
 
         const userAllCards = await db
-        .collection("cards")
-        .find({ owner: user_id })
-        .toArray()
+          .collection("cards")
+          .find({ owner: user_id })
+          .toArray()
 
         res.json({
           _id: user_id,
@@ -104,7 +103,7 @@ export const login = async (req, res) => {
           default_card_number: responseUsers.default_card_number,
           expiration_date: responseCards.expiration_date,
           card_number: responseCards.card_number,
-          userAllCards: userAllCards
+          userAllCards: userAllCards,
         })
       }
     } else {
@@ -117,19 +116,17 @@ export const login = async (req, res) => {
   }
 }
 
-
 export const validateToken = async (_, res) => {
   res.end()
 }
 
-
 export const updateProfile = async (req, res) => {
-  console.log(req.body)
+  // console.log(req.body)
 
   try {
     const db = await getDb()
-    const selectedUser = await db.collection("users").findOne({ 
-      _id: new ObjectId(req.body._id) 
+    const selectedUser = await db.collection("users").findOne({
+      _id: new ObjectId(req.body._id),
     })
     if (selectedUser) {
       if (req.file && req.file.mimetype.startsWith("image/")) {
@@ -164,13 +161,13 @@ export const updateProfile = async (req, res) => {
 
       // weil db.updateOne() nicht den geänderten Datensatz selbst zurück gibt muss response content extra ziehen
       const updatedSelectedUser = await db.collection("users").findOne({
-        _id: new ObjectId(req.body._id)
+        _id: new ObjectId(req.body._id),
       })
 
       const userAllCards = await db
-      .collection("cards")
-      .find({ owner: req.body._id })
-      .toArray()
+        .collection("cards")
+        .find({ owner: req.body._id })
+        .toArray()
 
       res.json({
         _id: updatedSelectedUser._id,
@@ -180,7 +177,7 @@ export const updateProfile = async (req, res) => {
         default_card_number: updatedSelectedUser.default_card_number,
         expiration_date: updatedSelectedUser.expiration_date,
         card_number: updatedSelectedUser.card_number,
-        userAllCards: userAllCards
+        userAllCards: userAllCards,
       })
     } else {
       console.log("User not found")
@@ -192,10 +189,36 @@ export const updateProfile = async (req, res) => {
   }
 }
 
-
 export const logout = async (_, res) => {
   res.clearCookie("finco_token")
   // res.cookie("finco_token", "", {expires: new Date(0)})
   // res.send({ message : "Logout successful" })
   res.status(200).end()
+}
+
+export const getUser = async (req, res) => {
+  console.log(req.payload)
+  const db = await getDb()
+  const user = await db
+    .collection("users")
+    .findOne({ _id: new ObjectId(req.payload.user) })
+  if (user) {
+    const userAllCards = await db
+      .collection("cards")
+      .find({ owner: user._id })
+      .toArray()
+      res.json({
+        _id: user._id,
+        username: user.username,
+        profile_image_url: user.profile_image_url,
+        spending_limit: user.spending_limit,
+        default_card_number: user.default_card_number,
+        expiration_date: user.expiration_date,
+        card_number: user.card_number,
+        userAllCards: userAllCards,
+      })
+  }else {
+    console.log("User not found")
+    res.status(404).end()
+  }
 }
