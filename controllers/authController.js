@@ -95,6 +95,12 @@ export const login = async (req, res) => {
           .find({ owner: user_id })
           .toArray()
 
+        const transactions = await db
+          .collection("transactions")
+          .find({ card_id: userAllCards[0]._id })
+          .toArray()
+        const sortTransactions = transactions.sort((a, b) => b.date - a.date)
+
         res.json({
           _id: user_id,
           username: responseUsers.username,
@@ -104,6 +110,7 @@ export const login = async (req, res) => {
           expiration_date: responseCards.expiration_date,
           card_number: responseCards.card_number,
           userAllCards: userAllCards,
+          transactions_default_card: sortTransactions,
         })
       }
     } else {
@@ -207,17 +214,17 @@ export const getUser = async (req, res) => {
       .collection("cards")
       .find({ owner: user._id })
       .toArray()
-      res.json({
-        _id: user._id,
-        username: user.username,
-        profile_image_url: user.profile_image_url,
-        spending_limit: user.spending_limit,
-        default_card_number: user.default_card_number,
-        expiration_date: user.expiration_date,
-        card_number: user.card_number,
-        userAllCards: userAllCards,
-      })
-  }else {
+    res.json({
+      _id: user._id,
+      username: user.username,
+      profile_image_url: user.profile_image_url,
+      spending_limit: user.spending_limit,
+      default_card_number: user.default_card_number,
+      expiration_date: user.expiration_date,
+      card_number: user.card_number,
+      userAllCards: userAllCards,
+    })
+  } else {
     console.log("User not found")
     res.status(404).end()
   }
