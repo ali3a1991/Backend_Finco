@@ -4,6 +4,7 @@ import { getDb } from "../utils/db.js"
 import { ObjectId } from "mongodb"
 import { createToken } from "../utils/jwtoken.js"
 import { uploadImage } from "../utils/imageService.js"
+import { validateCardNbr } from "../utils/validateCardNbr.js"
 
 export const register = async (req, res) => {
   // console.log(req.body)
@@ -154,17 +155,25 @@ export const updateProfile = async (req, res) => {
       }
 
       if (req.body.card_number) {
-        const responseCards = await db.collection("cards").updateOne(
-          { owner: new ObjectId(req.body._id) },
-          {
-            $set: {
-              card_number: req.body.card_number,
-              expiration_date: req.body.expiration_date,
-            },
-          }
-        )
-        if (!responseCards) res.status(500).end()
-      }
+        // check if card_number is valid
+        const num = req.body.card_number
+        const numArr = num.split('').filter(char => char !== ' ').map(Number);
+        if(validateCardNbr(numArr)) {
+          const responseCards = await db.collection("cards").updateOne(
+            { owner: new ObjectId(req.body._id) },
+            {
+              $set: {
+                card_number: req.body.card_number,
+                expiration_date: req.body.expiration_date,
+              },
+            }
+          )
+          if (!responseCards) res.status(500).end()
+        } else {
+          res.status(403).send({message: "invalid card number"})
+          return
+        }
+      } 
 
       // weil db.updateOne() nicht den geänderten Datensatz selbst zurück gibt muss response content extra ziehen
       const updatedSelectedUser = await db.collection("users").findOne({
