@@ -210,10 +210,12 @@ export const updateProfile = async (req, res) => {
 
 export const logout = async (_, res) => {
   res.clearCookie("finco_token", {
-    domain: "https://finco-server-m2c1.onrender.com",
+    domain: "finco-server-m2c1.onrender.com",
     path: "/",
+    sameSite: "none",
+    secure: true,
   })
-  // res.cookie("finco_token", "", {expires: new Date(0)})
+  // res.cookie("finco_token", "", { expires: new Date(0) })
   // res.send({ message : "Logout successful" })
   res.status(200).end()
 }
