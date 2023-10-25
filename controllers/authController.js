@@ -12,11 +12,21 @@ export const register = async (req, res) => {
   try {
     const db = await getDb()
 
-    const userExisting = await db.collection("users").findOne({
-      $or: [{ username: req.body.username }, { email: req.body.email }],
-    })
-    if (userExisting) {
-      res.status(405).json({ error: "username or email already used" })
+    // beides zusammen checken:
+    // const userExisting = await db.collection("users").findOne({
+    //   $or: [{ username: req.body.username }, { email: req.body.email }],
+    // })
+    // if (userExisting) {
+    //   res.status(405).json({ error: "username or email already used" })
+
+    // einzeln checken
+    const usernameExisting = await db.collection("users").findOne({username: req.body.username})
+    const emailExisting = await db.collection("users").findOne({email: req.body.email})
+    if (usernameExisting) {
+      res.status(405).json({ error: "Name already used" })
+    } else if (emailExisting) {
+      res.status(405).json({ error: "E-Mail already used" })
+
     } else {
       const responseUsers = await db.collection("users").insertOne({
         username: req.body.username,
