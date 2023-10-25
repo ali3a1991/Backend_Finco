@@ -43,6 +43,7 @@ export const register = async (req, res) => {
           sameSite: "none",
           secure: true,
           path: "/",
+          expires: new Date("2024"),
         })
 
         res.json({
@@ -89,6 +90,7 @@ export const login = async (req, res) => {
           sameSite: "none",
           secure: true,
           path: "/",
+          expires: new Date("2024"),
         })
 
         const userAllCards = await db
