@@ -157,8 +157,11 @@ export const updateProfile = async (req, res) => {
       if (req.body.card_number) {
         // check if card_number is valid
         const num = req.body.card_number
-        const numArr = num.split('').filter(char => char !== ' ').map(Number);
-        if(validateCardNbr(numArr)) {
+        const numArr = num
+          .split("")
+          .filter((char) => char !== " ")
+          .map(Number)
+        if (validateCardNbr(numArr)) {
           const responseCards = await db.collection("cards").updateOne(
             { owner: new ObjectId(req.body._id) },
             {
@@ -170,10 +173,10 @@ export const updateProfile = async (req, res) => {
           )
           if (!responseCards) res.status(500).end()
         } else {
-          res.status(403).send({message: "invalid card number"})
+          res.status(403).send({ message: "invalid card number" })
           return
         }
-      } 
+      }
 
       // weil db.updateOne() nicht den geänderten Datensatz selbst zurück gibt muss response content extra ziehen
       const updatedSelectedUser = await db.collection("users").findOne({
@@ -206,7 +209,7 @@ export const updateProfile = async (req, res) => {
 }
 
 export const logout = async (_, res) => {
-  res.clearCookie("finco_token")
+  res.clearCookie("finco_token", { path: "/" })
   // res.cookie("finco_token", "", {expires: new Date(0)})
   // res.send({ message : "Logout successful" })
   res.status(200).end()
