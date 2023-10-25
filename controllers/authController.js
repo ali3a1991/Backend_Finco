@@ -214,6 +214,7 @@ export const logout = async (_, res) => {
     path: "/",
     sameSite: "none",
     secure: true,
+    expires: new Date(0),
   })
   // res.cookie("finco_token", "", { expires: new Date(0) })
   // res.send({ message : "Logout successful" })
