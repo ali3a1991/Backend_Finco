@@ -209,7 +209,10 @@ export const updateProfile = async (req, res) => {
 }
 
 export const logout = async (_, res) => {
-  res.clearCookie("finco_token", { path: "/" })
+  res.clearCookie("finco_token", {
+    domain: "https://finco-nfeu.onrender.com",
+    path: "/",
+  })
   // res.cookie("finco_token", "", {expires: new Date(0)})
   // res.send({ message : "Logout successful" })
   res.status(200).end()
