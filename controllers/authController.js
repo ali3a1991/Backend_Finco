@@ -43,7 +43,6 @@ export const register = async (req, res) => {
           sameSite: "none",
           secure: true,
           path: "/",
-          // expires: new Date("2024"),
         })
 
         res.json({
@@ -90,7 +89,6 @@ export const login = async (req, res) => {
           sameSite: "none",
           secure: true,
           path: "/",
-          // expires: new Date("2024"),
         })
 
         const userAllCards = await db
@@ -211,28 +209,10 @@ export const updateProfile = async (req, res) => {
 }
 
 export const logout = async (_, res) => {
-  // res.clearCookie("finco_token", {
-  //   domain: "finco-server-m2c1.onrender.com",
-  //   path: "/",
-  //   sameSite: "none",
-  //   secure: true,
-  //   expires: new Date(0),
-  // })
+  res.clearCookie("finco_token")
   // res.cookie("finco_token", "", { expires: new Date() })
   // res.send({ message : "Logout successful" })
-  try {
-    const token = createToken({ user: "12345546848948" })
-
-    res.cookie("finco_token", token, {
-      httpOnly: true,
-      sameSite: "none",
-      secure: true,
-      path: "/",
-    })
-    res.status(200).end()
-  } catch {
-    res.status(404).end()
-  }
+  res.status(200).end()
 }
 
 export const getUser = async (req, res) => {
